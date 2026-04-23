@@ -225,14 +225,14 @@ function App() {
                 )}
               </div>
               <h2>Ready to Analyze</h2>
-              <p>Drag and drop your document here to begin</p>
-              <span className="file-types">Supports PDF, TXT, MD, and Images</span>
+              <p>Drag and drop or click to browse</p>
+              <span className="file-types">PDF, Word, TXT, MD, CSV, Images</span>
               <input 
                 type="file" 
                 ref={fileInputRef} 
                 onChange={handleFileUpload} 
                 hidden 
-                accept=".pdf,.txt,.md,.csv,image/*" 
+                accept=".pdf,.doc,.docx,.txt,.md,.csv,image/*" 
               />
               <button 
                 className="btn-primary" 
