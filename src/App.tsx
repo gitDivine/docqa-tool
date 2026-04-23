@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FileUp, Send, Trash2, FileText, ImageIcon, Loader2, Sparkles } from 'lucide-react';
+import { FileUp, Send, Trash2, FileText, ImageIcon, Loader2, Sparkles, ChevronDown, RefreshCw, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { uploadFile, generateContent } from './api/geminiApi';
+import { uploadFile, generateContent, AVAILABLE_MODELS } from './api/geminiApi';
 import type { GeminiFile } from './api/geminiApi';
 import ReactMarkdown from 'react-markdown';
 import './App.css';
@@ -10,6 +10,7 @@ interface Message {
   role: 'user' | 'model';
   text: string;
   image?: string;
+  isError?: boolean;
 }
 
 function App() {
@@ -19,7 +20,9 @@ function App() {
   const [inputText, setInputText] = useState('');
   const [inputImage, setInputImage] = useState<{ mimeType: string; data: string } | null>(null);
   const [isThinking, setIsThinking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<any>(null);
+  const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0].id);
+  const [showModelSelector, setShowModelSelector] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -64,33 +67,43 @@ function App() {
     reader.readAsDataURL(selectedImage);
   };
 
-  const handleSendMessage = async () => {
-    if (!inputText.trim() && !inputImage) return;
+  const handleSendMessage = async (retryData?: { text: string, image?: any }) => {
+    const textToSend = retryData ? retryData.text : inputText;
+    const imageToSend = retryData ? retryData.image : inputImage;
+
+    if (!textToSend.trim() && !imageToSend) return;
     if (!file) {
       setError('Please upload a document first.');
       return;
     }
-
-    const currentInput = inputText;
-    const currentImage = inputImage;
     
-    // Add user message to UI
-    setMessages(prev => [...prev, { 
-      role: 'user', 
-      text: currentInput, 
-      image: currentImage ? `data:${currentImage.mimeType};base64,${currentImage.data}` : undefined 
-    }]);
+    if (!retryData) {
+      setMessages(prev => [...prev, { 
+        role: 'user', 
+        text: textToSend, 
+        image: imageToSend ? `data:${imageToSend.mimeType};base64,${imageToSend.data}` : undefined 
+      }]);
+      setInputText('');
+      setInputImage(null);
+    }
 
-    setInputText('');
-    setInputImage(null);
     setIsThinking(true);
     setError(null);
 
     try {
-      const response = await generateContent(file.uri, file.mime_type, currentInput, currentImage || undefined);
+      const response = await generateContent(file.uri, file.mime_type, textToSend, selectedModel, imageToSend || undefined);
       setMessages(prev => [...prev, { role: 'model', text: response }]);
     } catch (err: any) {
-      setError(err.message || 'Failed to get answer');
+      if (err.type === 'HIGH_DEMAND') {
+        setError(err);
+        setMessages(prev => [...prev, { 
+          role: 'model', 
+          text: `Error: The model **${selectedModel}** is currently overloaded. Please try another model or resend in a few seconds.`,
+          isError: true
+        }]);
+      } else {
+        setError(err.message || 'Failed to get answer');
+      }
     } finally {
       setIsThinking(false);
     }
@@ -119,12 +132,56 @@ function App() {
             <Sparkles className="icon-primary" />
             <h1>DocQA Tool</h1>
           </div>
-          {file && (
-            <button className="btn-reset" onClick={resetSession}>
-              <Trash2 size={16} />
-              <span>New Document</span>
-            </button>
-          )}
+          
+          <div className="header-actions">
+            <div className="model-selector-wrapper">
+              <button 
+                className="btn-model-selector glass-card" 
+                onClick={() => setShowModelSelector(!showModelSelector)}
+              >
+                <div className="model-info">
+                  <span className="model-label">Model:</span>
+                  <span className="model-current">{AVAILABLE_MODELS.find(m => m.id === selectedModel)?.name}</span>
+                </div>
+                <ChevronDown size={14} className={showModelSelector ? 'rotate-180' : ''} />
+              </button>
+              
+              <AnimatePresence>
+                {showModelSelector && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="model-dropdown glass"
+                  >
+                    {AVAILABLE_MODELS.map(m => (
+                      <button 
+                        key={m.id} 
+                        className={`model-option ${selectedModel === m.id ? 'active' : ''}`}
+                        onClick={() => {
+                          setSelectedModel(m.id);
+                          setShowModelSelector(false);
+                        }}
+                      >
+                        <div className="option-name">
+                          {m.name}
+                          {m.recommended && <span className="badge">Recommended</span>}
+                        </div>
+                        <div className="option-desc">{m.desc}</div>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {file && (
+              <button className="btn-reset" onClick={resetSession}>
+                <Trash2 size={16} />
+                <span>New Document</span>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -183,7 +240,7 @@ function App() {
                 </div>
               </div>
               <div className="instructions">
-                <p>Ask questions about this document. Gemini will answer strictly based on its content.</p>
+                <p>Gemini is ready. You can switch models in the header if you experience spikes in demand.</p>
               </div>
             </div>
 
@@ -195,7 +252,7 @@ function App() {
                       key={i}
                       initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className={`message-bubble ${msg.role}`}
+                      className={`message-bubble ${msg.role} ${msg.isError ? 'error' : ''}`}
                     >
                       {msg.image && (
                         <div className="message-image">
@@ -205,6 +262,30 @@ function App() {
                       <div className="message-text">
                         <ReactMarkdown>{msg.text}</ReactMarkdown>
                       </div>
+                      
+                      {msg.isError && (
+                        <div className="error-actions">
+                          <button 
+                            className="btn-retry" 
+                            onClick={() => {
+                              const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+                              if (lastUserMsg) {
+                                handleSendMessage({ text: lastUserMsg.text });
+                              }
+                            }}
+                          >
+                            <RefreshCw size={14} />
+                            Retry
+                          </button>
+                          <button 
+                            className="btn-switch" 
+                            onClick={() => setShowModelSelector(true)}
+                          >
+                            <ChevronDown size={14} />
+                            Try Another Model
+                          </button>
+                        </div>
+                      )}
                     </motion.div>
                   ))}
                   {isThinking && (
@@ -264,9 +345,12 @@ function App() {
         )}
       </main>
 
-      {error && (
+      {error && !error.type && (
         <div className="error-toast glass">
-          <span>{error}</span>
+          <div className="error-content">
+            <AlertCircle color="var(--danger)" size={20} />
+            <span>{error}</span>
+          </div>
           <button onClick={() => setError(null)}>×</button>
         </div>
       )}

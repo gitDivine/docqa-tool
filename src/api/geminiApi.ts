@@ -13,6 +13,14 @@ export interface GeminiFile {
   sha256_hash: string;
 }
 
+export const AVAILABLE_MODELS = [
+  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Recommended - Fast & Stable', recommended: true },
+  { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', desc: 'Smarter - Better for complex docs', recommended: false },
+  { id: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Lite', desc: 'Experimental - Efficient', recommended: false },
+  { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', desc: 'Legacy - Fast fallback', recommended: false },
+  { id: 'gemini-pro-latest', name: 'Gemini Pro', desc: 'Stable - Strong reasoning', recommended: false },
+];
+
 export async function uploadFile(file: File): Promise<GeminiFile> {
   const metadata = {
     file: {
@@ -48,6 +56,7 @@ export async function generateContent(
   fileUri: string,
   mimeType: string,
   userMessage: string,
+  modelId: string = 'gemini-2.5-flash',
   imagePart?: { mimeType: string; data: string }
 ) {
   const systemPrompt = `You are a specialized Document Q&A assistant. Every answer you provide must be sourced strictly from the uploaded document. 
@@ -79,9 +88,8 @@ Formatting Rules:
     contents: [{ parts }],
   };
 
-  // Using stable gemini-2.5-flash as verified by diagnostics
   const response = await fetch(
-    `${BASE_URL}/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`,
+    `${BASE_URL}/v1beta/models/${modelId}:generateContent?key=${API_KEY}`,
     {
       method: 'POST',
       headers: {
@@ -92,8 +100,19 @@ Formatting Rules:
   );
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || 'Failed to generate content');
+    const errorBody = await response.json();
+    const error = errorBody.error;
+    
+    // Custom error handling for high demand
+    if (error?.status === 'UNAVAILABLE' || error?.message?.includes('high demand')) {
+      throw {
+        type: 'HIGH_DEMAND',
+        message: 'This model is currently experiencing high demand.',
+        model: modelId
+      };
+    }
+    
+    throw new Error(error?.message || 'Failed to generate content');
   }
 
   const result = await response.json();
