@@ -333,7 +333,7 @@ function App() {
                   />
                   <button 
                     className="btn-send" 
-                    onClick={handleSendMessage}
+                    onClick={() => handleSendMessage()}
                     disabled={(!inputText.trim() && !inputImage) || isThinking}
                   >
                     {isThinking ? <Loader2 className="animate-spin" size={20} /> : <Send size={20} />}
