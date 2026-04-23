@@ -42,8 +42,6 @@ body {
 #root {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .app-container {
@@ -53,26 +51,12 @@ body {
   padding: 20px;
   gap: 15px;
   overflow: hidden;
-}
-
-/* Glassmorphism */
-.glass {
-  background: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--bg-glass-border);
-  border-radius: 16px;
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 header {
-  padding: 8px 0;
+  padding: 10px 0;
   flex-shrink: 0;
 }
 
@@ -80,22 +64,11 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .logo h1 {
   font-size: 20px;
   font-weight: 700;
-  letter-spacing: -0.5px;
-  color: var(--text-main);
 }
 
 .icon-primary {
@@ -103,32 +76,39 @@ header {
   filter: drop-shadow(0 0 8px var(--primary-glow));
 }
 
-/* Sidebar Info (Mobile Header) */
-.doc-sidebar {
-  width: 300px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  flex-shrink: 0;
-}
-
-.file-info {
-  padding: 12px;
+/* Upload Page Centering */
+.upload-section {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--bg-glass-border);
-  border-radius: 10px;
+  justify-content: center;
+  width: 100%;
 }
 
-.file-name {
-  font-weight: 500;
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.upload-card {
+  width: 100%;
+  max-width: 450px;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  text-align: center;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: 20px;
+}
+
+.upload-icon-wrapper {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
 }
 
 /* Chat Layout */
@@ -136,25 +116,50 @@ main {
   flex: 1;
   display: flex;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
   overflow: hidden;
-  gap: 15px;
+  gap: 20px;
 }
 
 .chat-section {
   flex: 1;
   display: flex;
-  gap: 15px;
+  gap: 20px;
   width: 100%;
   overflow: hidden;
+}
+
+.doc-sidebar {
+  width: 300px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: 16px;
+}
+
+.file-info {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+}
+
+.file-name {
+  font-weight: 500;
+  font-size: 14px;
 }
 
 .chat-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 15px;
   overflow: hidden;
 }
 
@@ -179,7 +184,6 @@ main {
   background: var(--primary);
   color: white !important;
   border-bottom-right-radius: 4px;
-  box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .message-bubble.model {
@@ -189,23 +193,31 @@ main {
   border-bottom-left-radius: 4px;
 }
 
-.message-bubble.error {
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  background: rgba(239, 68, 68, 0.05);
-  color: var(--danger) !important;
-}
-
+/* HARD IMAGE CONSTRAINTS */
 .message-image img {
   max-width: 100% !important;
-  max-height: 350px !important;
+  max-height: 300px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
   border-radius: 12px;
   margin-bottom: 10px;
   display: block;
 }
 
-/* Input Zone */
+.image-preview img {
+  height: 70px !important;
+  width: auto !important;
+  border-radius: 8px;
+}
+
+/* Input Area */
 .input-box {
   padding: 12px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bg-glass-border);
+  border-radius: 16px;
   flex-shrink: 0;
 }
 
@@ -222,34 +234,27 @@ textarea {
   color: var(--text-main);
   resize: none;
   padding: 8px 0;
-  max-height: 100px;
   outline: none;
   font-size: 15px;
 }
 
-/* Buttons (Premium Glass Suite) */
+/* Premium Buttons */
 button {
   cursor: pointer;
-  border-radius: 10px;
+  border: none;
   transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
 }
 
 .btn-primary {
   background: var(--primary) !important;
   color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 24px;
+  padding: 12px 30px;
+  border-radius: 12px;
   font-weight: 600;
   box-shadow: 0 4px 15px var(--primary-glow);
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
 }
 
 .btn-reset {
@@ -257,11 +262,8 @@ button {
   color: var(--danger) !important;
   border: 1px solid rgba(239, 68, 68, 0.2) !important;
   padding: 6px 15px;
+  border-radius: 10px;
   font-size: 12px;
-}
-
-.btn-reset:hover {
-  background: rgba(239, 68, 68, 0.2) !important;
 }
 
 .btn-send {
@@ -270,17 +272,15 @@ button {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  border: none;
 }
 
 .btn-icon {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--bg-glass-border);
+  background: transparent;
   color: var(--text-muted);
   padding: 10px;
 }
 
-/* Error Buttons (Retry/Switch) */
+/* Error Recovery Buttons */
 .error-actions {
   display: flex;
   gap: 10px;
@@ -290,38 +290,27 @@ button {
 .btn-retry {
   background: var(--primary) !important;
   color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  padding: 8px 20px !important;
+  padding: 8px 20px;
+  border-radius: 8px;
   font-size: 13px;
-  font-weight: 600;
 }
 
 .btn-switch {
   background: rgba(255, 255, 255, 0.08) !important;
   color: var(--text-main) !important;
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  padding: 8px 20px !important;
+  border: 1px solid var(--bg-glass-border) !important;
+  padding: 8px 20px;
+  border-radius: 8px;
   font-size: 13px;
-  backdrop-filter: blur(10px);
 }
 
-/* Model Selector Dropdown & Options */
-.model-selector-wrapper {
-  position: relative;
-}
-
+/* Model Selector */
 .btn-model-selector {
-  border: 1px solid var(--bg-glass-border);
   background: rgba(255, 255, 255, 0.05);
-  padding: 6px 15px;
-  border-radius: 12px;
+  border: 1px solid var(--bg-glass-border);
+  padding: 6px 12px;
+  border-radius: 10px;
   color: var(--text-main) !important;
-}
-
-.btn-model-selector.active {
-  border-color: var(--primary);
-  background: rgba(79, 70, 229, 0.1);
-  box-shadow: 0 0 15px var(--primary-glow);
 }
 
 .model-dropdown {
@@ -329,86 +318,47 @@ button {
   top: calc(100% + 10px);
   right: 0;
   width: 280px;
-  z-index: 9999;
-  padding: 10px;
-  background: rgba(15, 15, 20, 0.95);
+  background: rgba(15, 15, 20, 0.98);
   backdrop-filter: blur(20px);
   border: 1px solid var(--bg-glass-border);
-  border-radius: 14px;
-  box-shadow: 0 15px 60px rgba(0, 0, 0, 0.9);
+  border-radius: 15px;
+  padding: 10px;
+  z-index: 9999;
 }
 
 .model-option {
   width: 100%;
   padding: 12px;
-  margin-bottom: 5px;
   border-radius: 10px;
   text-align: left;
   background: rgba(255, 255, 255, 0.02);
-  border: 1px solid transparent;
+  margin-bottom: 5px;
   color: var(--text-main) !important;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.model-option:last-child {
-  margin-bottom: 0;
-}
-
-.model-option:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--bg-glass-border);
 }
 
 .model-option.active {
   background: rgba(79, 70, 229, 0.15) !important;
   border: 1px solid var(--primary) !important;
-  box-shadow: 0 0 15px var(--primary-glow);
 }
 
-.option-name {
-  font-size: 14px;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.badge {
-  font-size: 10px;
-  background: var(--primary);
-  color: white;
-  padding: 2px 6px;
-  border-radius: 5px;
-  text-transform: uppercase;
-  font-weight: 800;
-}
-
-.option-desc {
-  font-size: 11px;
-  color: var(--text-muted);
-}
-
-/* Responsive (Mobile/iPhone Optimization) */
+/* RESPONSIVE (Hardened Mobile Fix) */
 @media (max-width: 900px) {
   .app-container {
     padding: 10px;
-    gap: 10px;
   }
-
+  
   .chat-section {
     flex-direction: column;
-    gap: 10px;
   }
 
   .doc-sidebar {
     width: 100%;
-    padding: 8px;
+    padding: 8px 12px;
     flex-direction: row;
     height: auto;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.02);
+    align-items: center;
+    justify-content: space-between;
   }
 
   .doc-sidebar h3, .doc-sidebar .instructions, .doc-sidebar .divider {
@@ -419,13 +369,24 @@ button {
     display: none;
   }
 
-  .message-bubble {
-    max-width: 90%;
+  .upload-card {
+    max-width: 100%;
+    margin: 0 10px;
+    padding: 40px 20px;
   }
 
-  .model-dropdown {
-    right: -10px;
-    width: 260px;
+  .message-bubble {
+    max-width: 92%;
+  }
+
+  .message-image img {
+    max-height: 250px !important;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .app-container {
+    height: -webkit-fill-available;
   }
 }
 
