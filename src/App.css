@@ -50,9 +50,12 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 20px;
-  gap: 20px;
+  padding: 15px;
+  gap: 15px;
   overflow: hidden;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Glassmorphism */
@@ -72,7 +75,7 @@ body {
 }
 
 header {
-  padding: 10px 0;
+  padding: 5px 0;
   flex-shrink: 0;
 }
 
@@ -81,18 +84,16 @@ header {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .logo h1 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.5px;
 }
@@ -102,35 +103,35 @@ header {
   filter: drop-shadow(0 0 5px var(--primary-glow));
 }
 
-/* Sidebar & Info */
-.doc-sidebar {
-  width: 300px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  flex-shrink: 0;
-}
-
-.file-info {
-  padding: 16px;
+/* Upload Section */
+.upload-section {
+  flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  width: 100%;
 }
 
-.file-name {
-  font-weight: 500;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.upload-card {
+  width: 100%;
+  max-width: 480px;
+  padding: 50px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  text-align: center;
 }
 
-.file-status {
-  font-size: 11px;
-  color: var(--secondary);
-  font-weight: 700;
+.upload-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(79, 70, 229, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
 }
 
 /* Chat Layout */
@@ -138,8 +139,6 @@ main {
   flex: 1;
   display: flex;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
   overflow: hidden;
   gap: 20px;
 }
@@ -152,28 +151,59 @@ main {
   overflow: hidden;
 }
 
+.doc-sidebar {
+  width: 280px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+.file-info {
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.file-name {
+  font-weight: 500;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-status {
+  font-size: 10px;
+  color: var(--secondary);
+  font-weight: 700;
+}
+
+/* Chat */
 .chat-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 12px;
   overflow: hidden;
 }
 
 .messages-list {
   flex: 1;
   overflow-y: auto;
-  padding: 10px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 15px;
 }
 
 .message-bubble {
-  max-width: 80%;
-  padding: 12px 18px;
+  max-width: 85%;
+  padding: 10px 15px;
   border-radius: 18px;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .message-bubble.user {
@@ -190,34 +220,32 @@ main {
   border-bottom-left-radius: 4px;
 }
 
+/* Images */
 .message-image img {
-  max-width: 400px !important;
-  max-height: 350px !important;
-  width: auto !important;
-  height: auto !important;
+  max-width: 100% !important;
+  max-height: 300px !important;
   object-fit: contain !important;
   border-radius: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   display: block;
+}
+
+.image-preview img {
+  height: 60px !important;
+  width: auto !important;
+  border-radius: 8px;
 }
 
 /* Input Zone */
 .input-box {
-  padding: 15px;
+  padding: 12px;
   flex-shrink: 0;
-}
-
-.image-preview img {
-  height: 80px !important;
-  width: auto !important;
-  border-radius: 8px;
-  object-fit: cover;
 }
 
 .input-wrapper {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 10px;
 }
 
 textarea {
@@ -226,13 +254,13 @@ textarea {
   border: none;
   color: var(--text-main);
   resize: none;
-  padding: 10px 0;
-  max-height: 120px;
+  padding: 8px 0;
+  max-height: 100px;
   outline: none;
-  font-size: 15px;
+  font-size: 14px;
 }
 
-/* Buttons (Universal Gold Standard Style) */
+/* Buttons */
 button {
   cursor: pointer;
   border-radius: 10px;
@@ -240,92 +268,37 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-weight: 500;
+  gap: 6px;
 }
 
 .btn-primary {
   background: var(--primary);
   color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px 28px;
+  padding: 10px 24px;
   font-weight: 600;
-}
-
-.btn-primary:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 0 25px var(--primary-glow);
-  transform: translateY(-1px);
 }
 
 .btn-reset {
   background: rgba(239, 68, 68, 0.1) !important;
   color: var(--danger) !important;
   border: 1px solid rgba(239, 68, 68, 0.2) !important;
-  padding: 8px 16px;
-  font-size: 13px;
-}
-
-.btn-reset:hover {
-  background: rgba(239, 68, 68, 0.2) !important;
-  border-color: var(--danger) !important;
+  padding: 6px 12px;
+  font-size: 12px;
 }
 
 .btn-send {
   background: var(--primary);
   color: white;
-  border: none;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-}
-
-.btn-send:hover {
-  box-shadow: 0 0 20px var(--primary-glow);
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
 }
 
 .btn-icon {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--bg-glass-border);
   color: var(--text-muted);
-  padding: 10px;
-}
-
-.btn-icon:hover {
-  color: var(--text-main);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-/* Error Actions (Retry / Switch) */
-.error-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.btn-retry {
-  background: var(--primary) !important;
-  color: white !important;
-  border: 1px solid rgba(255, 255, 255, 0.2) !important;
-  padding: 8px 20px;
-  font-size: 13px;
-}
-
-.btn-retry:hover {
-  box-shadow: 0 0 20px var(--primary-glow);
-}
-
-.btn-switch {
-  background: rgba(255, 255, 255, 0.05) !important;
-  color: var(--text-main) !important;
-  border: 1px solid var(--bg-glass-border) !important;
-  padding: 8px 20px;
-  font-size: 13px;
-}
-
-.btn-switch:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  padding: 8px;
 }
 
 /* Model Selector */
@@ -336,70 +309,70 @@ button {
 .btn-model-selector {
   border: 1px solid var(--bg-glass-border);
   background: rgba(255, 255, 255, 0.05);
-  padding: 6px 15px;
-  border-radius: 12px;
-  color: var(--text-main);
-}
-
-.btn-model-selector.active {
-  border-color: var(--primary);
-  background: rgba(79, 70, 229, 0.1);
-  box-shadow: 0 0 15px var(--primary-glow);
-}
-
-.model-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
-  right: 0;
-  width: 280px;
-  z-index: 9999;
-  padding: 10px;
-  box-shadow: 0 15px 60px rgba(0, 0, 0, 0.9);
-}
-
-.model-option {
-  width: 100%;
-  padding: 12px;
+  padding: 4px 10px;
   border-radius: 10px;
-  text-align: left;
-  background: transparent;
-  border: 1px solid transparent;
   color: var(--text-main);
 }
 
-.model-option:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--bg-glass-border);
+.model-current {
+  font-size: 12px;
+  font-weight: 600;
 }
 
-.model-option.active {
-  background: rgba(79, 70, 229, 0.1);
-  border-color: var(--primary);
-}
-
-/* Responsive */
+/* Mobile Adjustments (Hardened) */
 @media (max-width: 900px) {
   .app-container {
     padding: 10px;
+    gap: 10px;
   }
 
   .chat-section {
     flex-direction: column;
+    gap: 8px;
   }
 
+  /* Compact Horizontal Sidebar */
   .doc-sidebar {
     width: 100%;
-    padding: 8px;
+    padding: 6px 8px;
     flex-direction: row;
     height: auto;
+    gap: 10px;
+    align-items: center;
+    border-radius: 12px;
+  }
+
+  .doc-sidebar h3, .doc-sidebar .instructions, .doc-sidebar .divider {
+    display: none;
+  }
+
+  .file-info {
+    flex: 1;
+    padding: 6px 10px;
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .logo h1 {
     display: none;
   }
 
+  .upload-card {
+    max-width: 100%;
+    margin: 0 10px;
+  }
+
+  .input-box {
+    padding: 8px;
+  }
+
   .message-bubble {
     max-width: 90%;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  .app-container {
+    height: -webkit-fill-available;
   }
 }
 
