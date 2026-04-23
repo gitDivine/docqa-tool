@@ -139,6 +139,7 @@ main {
   backdrop-filter: blur(12px);
   border: 1px solid var(--bg-glass-border);
   border-radius: 16px;
+  overflow: visible !important; /* Fix clipping */
 }
 
 .file-info {
@@ -305,6 +306,11 @@ button {
 }
 
 /* Model Selector */
+.model-selector-wrapper {
+  position: relative;
+  overflow: visible !important;
+}
+
 .btn-model-selector {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--bg-glass-border);

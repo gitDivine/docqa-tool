@@ -25,6 +25,7 @@ function App() {
   const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0].id);
   const [showModelSelector, setShowModelSelector] = useState(false);
   const [lastAttempt, setLastAttempt] = useState<{ text: string, image?: any } | null>(null);
+  const modelSelectorRef = useRef<HTMLDivElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -33,6 +34,16 @@ function App() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modelSelectorRef.current && !modelSelectorRef.current.contains(event.target as Node)) {
+        setShowModelSelector(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -164,7 +175,7 @@ function App() {
           </div>
           
           <div className="header-actions">
-            <div className="model-selector-wrapper">
+            <div className="model-selector-wrapper" ref={modelSelectorRef}>
               <button 
                 className={`btn-model-selector glass-card ${showModelSelector ? 'active' : ''}`} 
                 onClick={() => setShowModelSelector(!showModelSelector)}
