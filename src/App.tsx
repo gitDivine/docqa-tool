@@ -127,16 +127,12 @@ function App() {
       const response = await generateContent(file.uri, file.mime_type, textToSend, selectedModel, imageToSend || undefined);
       setMessages(prev => [...prev, { role: 'model', text: response }]);
     } catch (err: any) {
-      if (err.type === 'HIGH_DEMAND') {
-        setError(err);
-        setMessages(prev => [...prev, { 
-          role: 'model', 
-          text: `**ERROR:** The model **${selectedModel}** is currently overloaded.\n\nThis is usually temporary. You can try again in a few seconds or switch to a different model in the header.`,
-          isError: true
-        }]);
-      } else {
-        setError(err.message || 'Failed to get answer');
-      }
+      setError(err);
+      setMessages(prev => [...prev, { 
+        role: 'model', 
+        text: `**AI Error:** ${err.message || 'Something went wrong.'}\n\nPlease try again or switch to another model.`,
+        isError: true
+      }]);
     } finally {
       setIsThinking(false);
     }

@@ -14,8 +14,8 @@ export interface GeminiFile {
 }
 
 export const AVAILABLE_MODELS = [
-  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Recommended - High Speed & Stable', recommended: true },
-  { id: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Flash Lite', desc: 'Experimental - Cost Efficient', recommended: false },
+  { id: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Flash Lite', desc: 'Recommended - Ultra Fast & Efficient', recommended: true },
+  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Optional - Deep Reasoning & Stable', recommended: false },
 ];
 
 export async function uploadFile(file: File): Promise<GeminiFile> {
@@ -53,7 +53,7 @@ export async function generateContent(
   fileUri: string,
   mimeType: string,
   userMessage: string,
-  modelId: string = 'gemini-2.5-flash',
+  modelId: string = 'gemini-3.1-flash-lite-preview',
   imagePart?: { mimeType: string; data: string }
 ) {
   const systemPrompt = `You are a specialized Document Q&A assistant. Every answer you provide must be sourced strictly from the uploaded document. 
@@ -100,10 +100,11 @@ Formatting Rules:
     const errorBody = await response.json();
     const error = errorBody.error;
     
-    if (error?.status === 'UNAVAILABLE' || error?.message?.includes('high demand')) {
+    // Check for quota or high demand errors
+    if (error?.status === 'UNAVAILABLE' || error?.message?.includes('high demand') || error?.message?.includes('quota')) {
       throw {
-        type: 'HIGH_DEMAND',
-        message: 'This model is currently experiencing high demand.',
+        type: 'QUOTA_EXCEEDED',
+        message: error?.message || 'This model is currently experiencing high demand or quota limits reached.',
         model: modelId
       };
     }
