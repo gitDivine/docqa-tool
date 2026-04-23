@@ -14,11 +14,8 @@ export interface GeminiFile {
 }
 
 export const AVAILABLE_MODELS = [
-  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Recommended - Fast & Stable', recommended: true },
-  { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro', desc: 'Smarter - Better for complex docs', recommended: false },
-  { id: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Lite', desc: 'Experimental - Efficient', recommended: false },
-  { id: 'gemini-2.0-flash', name: 'Gemini 2.0 Flash', desc: 'Legacy - Fast fallback', recommended: false },
-  { id: 'gemini-pro-latest', name: 'Gemini Pro', desc: 'Stable - Strong reasoning', recommended: false },
+  { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash', desc: 'Recommended - High Speed & Stable', recommended: true },
+  { id: 'gemini-3.1-flash-lite-preview', name: 'Gemini 3.1 Flash Lite', desc: 'Experimental - Cost Efficient', recommended: false },
 ];
 
 export async function uploadFile(file: File): Promise<GeminiFile> {
@@ -103,7 +100,6 @@ Formatting Rules:
     const errorBody = await response.json();
     const error = errorBody.error;
     
-    // Custom error handling for high demand
     if (error?.status === 'UNAVAILABLE' || error?.message?.includes('high demand')) {
       throw {
         type: 'HIGH_DEMAND',
