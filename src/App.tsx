@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { uploadFile, generateContent, AVAILABLE_MODELS } from './api/geminiApi';
 import type { GeminiFile } from './api/geminiApi';
 import ReactMarkdown from 'react-markdown';
+import * as mammoth from 'mammoth';
 import './App.css';
 
 interface Message {
@@ -44,10 +45,29 @@ function App() {
     try {
       setIsUploading(true);
       setError(null);
-      const uploadedFile = await uploadFile(selectedFile);
+      
+      let fileToUpload = selectedFile;
+
+      // Handle Word Document Conversion
+      if (selectedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || 
+          selectedFile.name.endsWith('.docx') || 
+          selectedFile.name.endsWith('.doc')) {
+        
+        setError('Converting Word document to text for analysis...');
+        const arrayBuffer = await selectedFile.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        
+        // Create a new Text file blob
+        fileToUpload = new File([result.value], selectedFile.name.replace(/\.(docx|doc)$/, '.txt'), {
+          type: 'text/plain',
+        });
+        setError(null);
+      }
+
+      const uploadedFile = await uploadFile(fileToUpload);
       setFile(uploadedFile);
     } catch (err: any) {
-      setError(err.message || 'Failed to upload file');
+      setError(err.message || 'Failed to process file');
     } finally {
       setIsUploading(false);
     }
