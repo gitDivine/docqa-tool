@@ -462,9 +462,31 @@ textarea {
   .chat-section {
     grid-template-columns: 1fr;
   }
-  .doc-sidebar {
-    display: none;
-  }
+.divider {
+  height: 1px;
+  background: var(--bg-glass-border);
+  margin: 15px 0;
+}
+
+.hint {
+  font-size: 12px;
+  opacity: 0.8;
+  font-style: italic;
+}
+
+.dropdown-header {
+  padding: 8px 12px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.btn-model-selector.active {
+  background: var(--bg-glass);
+  border-color: var(--primary);
+  box-shadow: 0 0 15px var(--primary-glow);
 }
 
 /* Model Selector */

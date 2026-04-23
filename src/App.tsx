@@ -23,6 +23,7 @@ function App() {
   const [error, setError] = useState<any>(null);
   const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0].id);
   const [showModelSelector, setShowModelSelector] = useState(false);
+  const [lastAttempt, setLastAttempt] = useState<{ text: string, image?: any } | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -77,6 +78,9 @@ function App() {
       return;
     }
     
+    // Save for potential retry
+    setLastAttempt({ text: textToSend, image: imageToSend });
+
     if (!retryData) {
       setMessages(prev => [...prev, { 
         role: 'user', 
@@ -90,6 +94,15 @@ function App() {
     setIsThinking(true);
     setError(null);
 
+    // If it was an error before, remove the last error message for a cleaner UI on retry
+    if (retryData) {
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last && last.isError) return prev.slice(0, -1);
+        return prev;
+      });
+    }
+
     try {
       const response = await generateContent(file.uri, file.mime_type, textToSend, selectedModel, imageToSend || undefined);
       setMessages(prev => [...prev, { role: 'model', text: response }]);
@@ -98,7 +111,7 @@ function App() {
         setError(err);
         setMessages(prev => [...prev, { 
           role: 'model', 
-          text: `Error: The model **${selectedModel}** is currently overloaded. Please try another model or resend in a few seconds.`,
+          text: `**ERROR:** The model **${selectedModel}** is currently overloaded.\n\nThis is usually temporary. You can try again in a few seconds or switch to a different model in the header.`,
           isError: true
         }]);
       } else {
@@ -122,6 +135,7 @@ function App() {
     setInputText('');
     setInputImage(null);
     setError(null);
+    setLastAttempt(null);
   };
 
   return (
@@ -136,11 +150,11 @@ function App() {
           <div className="header-actions">
             <div className="model-selector-wrapper">
               <button 
-                className="btn-model-selector glass-card" 
+                className={`btn-model-selector glass-card ${showModelSelector ? 'active' : ''}`} 
                 onClick={() => setShowModelSelector(!showModelSelector)}
               >
                 <div className="model-info">
-                  <span className="model-label">Model:</span>
+                  <span className="model-label">AI Intelligence:</span>
                   <span className="model-current">{AVAILABLE_MODELS.find(m => m.id === selectedModel)?.name}</span>
                 </div>
                 <ChevronDown size={14} className={showModelSelector ? 'rotate-180' : ''} />
@@ -149,11 +163,12 @@ function App() {
               <AnimatePresence>
                 {showModelSelector && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     className="model-dropdown glass"
                   >
+                    <div className="dropdown-header">Select Model</div>
                     {AVAILABLE_MODELS.map(m => (
                       <button 
                         key={m.id} 
@@ -178,7 +193,7 @@ function App() {
             {file && (
               <button className="btn-reset" onClick={resetSession}>
                 <Trash2 size={16} />
-                <span>New Document</span>
+                <span>Reset</span>
               </button>
             )}
           </div>
@@ -209,9 +224,9 @@ function App() {
                   <FileUp size={48} />
                 )}
               </div>
-              <h2>Upload Document</h2>
-              <p>Drag and drop or click to browse</p>
-              <span className="file-types">PDF, TXT, MD, CSV, Images</span>
+              <h2>Ready to Analyze</h2>
+              <p>Drag and drop your document here to begin</p>
+              <span className="file-types">Supports PDF, TXT, MD, and Images</span>
               <input 
                 type="file" 
                 ref={fileInputRef} 
@@ -224,34 +239,37 @@ function App() {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
               >
-                {isUploading ? 'Uploading...' : 'Select File'}
+                {isUploading ? 'Uploading...' : 'Choose File'}
               </button>
             </motion.div>
           </div>
         ) : (
           <div className="chat-section">
             <div className="doc-sidebar glass">
-              <h3>Current Document</h3>
+              <h3>Active Document</h3>
               <div className="file-info glass-card">
                 <FileText size={20} />
                 <div className="file-details">
                   <span className="file-name">{file.display_name}</span>
-                  <span className="file-status">LOADED</span>
+                  <span className="file-status">READY</span>
                 </div>
               </div>
               <div className="instructions">
-                <p>Gemini is ready. You can switch models in the header if you experience spikes in demand.</p>
+                <p>Asking questions as <strong>{AVAILABLE_MODELS.find(m => m.id === selectedModel)?.name}</strong>.</p>
+                <div className="divider" />
+                <p className="hint">If the AI is busy, try switching to a <strong>Flash</strong> model for faster response.</p>
               </div>
             </div>
 
             <div className="chat-container">
               <div className="messages-list">
-                <AnimatePresence>
+                <AnimatePresence mode="popLayout">
                   {messages.map((msg, i) => (
                     <motion.div 
                       key={i}
-                      initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
                       className={`message-bubble ${msg.role} ${msg.isError ? 'error' : ''}`}
                     >
                       {msg.image && (
@@ -268,21 +286,20 @@ function App() {
                           <button 
                             className="btn-retry" 
                             onClick={() => {
-                              const lastUserMsg = messages.filter(m => m.role === 'user').pop();
-                              if (lastUserMsg) {
-                                handleSendMessage({ text: lastUserMsg.text });
+                              if (lastAttempt) {
+                                handleSendMessage(lastAttempt);
                               }
                             }}
                           >
                             <RefreshCw size={14} />
-                            Retry
+                            Retry Now
                           </button>
                           <button 
                             className="btn-switch" 
                             onClick={() => setShowModelSelector(true)}
                           >
                             <ChevronDown size={14} />
-                            Try Another Model
+                            Switch Model
                           </button>
                         </div>
                       )}
@@ -290,6 +307,7 @@ function App() {
                   ))}
                   {isThinking && (
                     <motion.div 
+                      key="thinking"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="message-bubble model thinking"
@@ -326,10 +344,11 @@ function App() {
                     accept="image/*" 
                   />
                   <textarea 
-                    placeholder="Type your question... (Shift+Enter for new line)"
+                    placeholder="Type your question..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}
                     onKeyDown={handleKeyDown}
+                    rows={1}
                   />
                   <button 
                     className="btn-send" 
