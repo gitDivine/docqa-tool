@@ -3,6 +3,7 @@ import { FileUp, Send, Trash2, FileText, ImageIcon, Loader2, Sparkles } from 'lu
 import { motion, AnimatePresence } from 'framer-motion';
 import { uploadFile, generateContent } from './api/geminiApi';
 import type { GeminiFile } from './api/geminiApi';
+import ReactMarkdown from 'react-markdown';
 import './App.css';
 
 interface Message {
@@ -202,7 +203,7 @@ function App() {
                         </div>
                       )}
                       <div className="message-text">
-                        {msg.text}
+                        <ReactMarkdown>{msg.text}</ReactMarkdown>
                       </div>
                     </motion.div>
                   ))}

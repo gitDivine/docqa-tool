@@ -50,7 +50,15 @@ export async function generateContent(
   userMessage: string,
   imagePart?: { mimeType: string; data: string }
 ) {
-  const systemPrompt = "You are a specialized Document Q&A assistant. Every answer you provide must be sourced strictly from the uploaded document. If the answer is not found in the document, you must explicitly say: 'No answer regarding this question in your document.' Do not guess or use external knowledge. If multiple questions are asked, number them and answer separately.";
+  const systemPrompt = `You are a specialized Document Q&A assistant. Every answer you provide must be sourced strictly from the uploaded document. 
+
+Formatting Rules:
+1. Use clean Markdown for all answers.
+2. Use bold headings for multiple questions.
+3. Use bullet points for lists.
+4. If the answer is not found in the document, you must explicitly say: 'No answer regarding this question in your document.' 
+5. Do not guess or use external knowledge. 
+6. Keep answers concise and well-organized.`;
 
   const parts: any[] = [
     { file_data: { mime_type: mimeType, file_uri: fileUri } }, 

@@ -173,6 +173,39 @@ main {
   border-bottom-left-radius: 4px;
 }
 
+.message-text {
+  word-break: break-word;
+}
+
+.message-text p {
+  margin-bottom: 12px;
+}
+
+.message-text p:last-child {
+  margin-bottom: 0;
+}
+
+.message-text ul, .message-text ol {
+  padding-left: 24px;
+  margin-bottom: 12px;
+}
+
+.message-text li {
+  margin-bottom: 6px;
+}
+
+.message-text h1, .message-text h2, .message-text h3 {
+  font-size: 1.15em;
+  margin: 16px 0 8px 0;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.message-text strong {
+  color: white;
+  font-weight: 700;
+}
+
 .message-image img {
   max-width: 100%;
   border-radius: 8px;
